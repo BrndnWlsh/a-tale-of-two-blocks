@@ -1,0 +1,119 @@
+[gd_scene format=3 uid="uid://oxlmvwp6q3fu"]
+
+[ext_resource type="MeshLibrary" uid="uid://drjxm425sub0f" path="res://assets/MeshLibrary.tres" id="1_lbhrr"]
+[ext_resource type="Script" uid="uid://b5m80lw1cbdjg" path="res://scripts/grid_map.gd" id="2_iywne"]
+[ext_resource type="Script" uid="uid://cmqkj08n4lnsp" path="res://scripts/character_body_3d.gd" id="3_p57ef"]
+[ext_resource type="Script" uid="uid://b1odmclkd0rx6" path="res://scripts/hotbar.gd" id="4_iywne"]
+[ext_resource type="Script" uid="uid://dhdqh8ylrs2ct" path="res://scripts/pause_menu.gd" id="4_u5sy4"]
+[ext_resource type="Script" uid="uid://b46hkaqk6qm4e" path="res://scenes/debug_text.gd" id="6_p57ef"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0wfyh"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_sugp2"]
+sky_material = SubResource("ProceduralSkyMaterial_0wfyh")
+
+[sub_resource type="Environment" id="Environment_jyhfs"]
+background_mode = 2
+sky = SubResource("Sky_sugp2")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_jyhfs"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tbgi4"]
+
+[node name="Game" type="Node3D" unique_id=721784016]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1781549032]
+environment = SubResource("Environment_jyhfs")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=166803439]
+transform = Transform3D(-0.77648675, 0.5457118, -0.31506675, 2.9671545e-08, 0.4999999, 0.8660255, 0.6301337, 0.6724573, -0.3882433, 0, 10, 0)
+shadow_enabled = true
+
+[node name="GridMap" type="GridMap" parent="." unique_id=118213227]
+mesh_library = ExtResource("1_lbhrr")
+cell_size = Vector3(0.5, 0.5, 0.5)
+data = {
+"cells": PackedInt32Array(0, 1, 1048576, 1, 1, 1048576, 0, 2, 1048576, 1, 2, 1048576, 0, 3, 1048576, 1, 3, 1048576, 2, 2, 1048576, 2, 1, 1048576, 65535, 2, 1048576, 65535, 0, 1048576, 65535, 65535, 1048576, 0, 65535, 1048576, 0, 0, 1048576, 1, 0, 1048576, 0, 65534, 1048576, 0, 65533, 1048576, 0, 65532, 1048576, 1, 65535, 1048576, 1, 65534, 1048576, 65537, 65534, 1048576, 131073, 65534, 1048576, 196609, 65534, 1048576, 196610, 65534, 1048576, 196611, 65534, 1048576, 65535, 1, 1048576, 65534, 1, 1048576, 65534, 0, 1048576, 65534, 65535, 1048576, 65533, 65535, 1048576, 65533, 65534, 1048576, 65534, 65534, 1048576, 65535, 65534, 1048576, 65535, 65533, 1048576, 65535, 65532, 1048576, 65534, 65532, 1048576, 65534, 65533, 1048576, 65533, 65533, 1048576, 65533, 65532, 1048576, 65532, 65532, 1048576, 65531, 65532, 1048576, 65531, 65533, 1048576, 65532, 65533, 1048576, 65532, 65534, 1048576, 65532, 65535, 1048576, 65531, 65534, 1048576, 65531, 65535, 1048576, 65533, 0, 1048576, 65532, 0, 1048576, 65531, 0, 1048576, 65531, 1, 1048576, 65531, 2, 1048576, 65532, 2, 1048576, 65532, 3, 1048576, 65531, 3, 1048576, 65533, 3, 1048576, 65534, 3, 1048576, 65535, 3, 1048576, 65534, 2, 1048576, 65533, 1, 1048576, 65532, 1, 1048576, 65533, 2, 1048576, 2, 3, 1048576, 3, 3, 1048576, 4, 3, 1048576, 4, 2, 1048576, 4, 1, 1048576, 4, 0, 1048576, 4, 65535, 1048576, 4, 65534, 1048576, 4, 65533, 1048576, 4, 65532, 1048576, 3, 65532, 1048576, 2, 65532, 1048576, 1, 65532, 1048576, 1, 65531, 1048576, 0, 65531, 1048576, 65535, 65531, 1048576, 65535, 65530, 1048576, 65534, 65530, 1048576, 65533, 65530, 1048576, 65532, 65530, 1048576, 65531, 65530, 1048576, 65531, 65529, 1048576, 0, 65530, 1048576, 1, 65529, 1048576, 2, 65529, 1048576, 3, 65529, 1048576, 3, 65528, 1048576, 4, 65528, 1048576, 5, 65528, 1048576, 5, 65529, 1048576, 4, 65529, 1048576, 2, 65528, 1048576, 1, 65528, 1048576, 1, 65527, 1048576, 0, 65527, 1048576, 65535, 65527, 1048576, 65534, 65527, 1048576, 65533, 65527, 1048576, 65532, 65527, 1048576, 65532, 65528, 1048576, 65531, 65528, 1048576, 65531, 65527, 1048576, 65533, 65528, 1048576, 65534, 65528, 1048576, 65535, 65528, 1048576, 0, 65528, 1048576, 65535, 65529, 1048576, 65534, 65529, 1048576, 65533, 65529, 1048576, 65531, 65531, 1048576, 65532, 65531, 1048576, 65533, 65531, 1048576, 65534, 65531, 1048576, 65532, 65529, 1048576, 0, 65529, 1048576, 1, 65530, 1048576, 2, 65531, 1048576, 3, 65531, 1048576, 3, 65530, 1048576, 2, 65530, 1048576, 4, 65530, 1048576, 4, 65531, 1048576, 3, 65533, 1048576, 3, 65534, 1048576, 3, 65535, 1048576, 3, 0, 1048576, 3, 1, 1048576, 2, 0, 1048576, 2, 65535, 1048576, 2, 65534, 1, 3, 2, 1048576, 5, 2, 1048576, 5, 3, 1048576, 6, 3, 1048576, 6, 2, 1048576, 6, 1, 1048576, 6, 0, 1048576, 7, 0, 1048576, 7, 65535, 1048576, 7, 65534, 1048576, 7, 65533, 1048576, 8, 65533, 1048576, 8, 65532, 1048576, 8, 65531, 1048576, 7, 65531, 1048576, 7, 65530, 1048576, 7, 65529, 1048576, 6, 65529, 1048576, 6, 65530, 1048576, 5, 65530, 1048576, 5, 65531, 1048576, 5, 65532, 1048576, 5, 65533, 1048576, 6, 65534, 1048576, 6, 65535, 1048576, 5, 1, 1048576, 5, 0, 1048576, 5, 65535, 1048576, 5, 65534, 1048576, 6, 65533, 1048576, 6, 65532, 1048576, 7, 65532, 1048576, 6, 65531, 1048576, 65530, 1, 1048577, 65530, 0, 1048577, 65530, 65535, 1048577, 65530, 65534, 1048577, 65530, 65533, 1048577, 65529, 1, 1048576, 65529, 0, 1048576, 65529, 65535, 1048576, 65529, 65534, 1048576, 131069, 65531, 0, 131070, 65531, 0, 131071, 65531, 0, 65536, 65531, 0, 65537, 65531, 0, 196605, 65531, 0, 196606, 65531, 0, 196606, 65530, 0, 196607, 65530, 0, 131072, 65530, 0, 131073, 65530, 0, 131073, 65529, 0, 131074, 65529, 0, 131074, 65530, 0, 131073, 65531, 0, 131072, 65531, 0, 196607, 65531, 0, 196607, 65532, 0, 262141, 65531, 1, 262141, 65532, 1, 262142, 65531, 1, 262143, 65531, 1, 196608, 65531, 1, 65538, 65532, 1, 2, 65533, 1, 1, 65533, 1)
+}
+script = ExtResource("2_iywne")
+metadata/_editor_floor_ = Vector3(0, 0, 0)
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1215262923]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5497619, 0)
+script = ExtResource("3_p57ef")
+can_freefly = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D" unique_id=394263108]
+mesh = SubResource("CapsuleMesh_jyhfs")
+
+[node name="Collider" type="CollisionShape3D" parent="CharacterBody3D" unique_id=1668942931]
+shape = SubResource("CapsuleShape3D_tbgi4")
+
+[node name="Head" type="Node3D" parent="CharacterBody3D" unique_id=1440641802]
+
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D/Head" unique_id=1257453239]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="RayCast3D" type="RayCast3D" parent="CharacterBody3D/Head" unique_id=1138330183]
+transform = Transform3D(1.9106855e-15, -8.742278e-08, -1, -1, -8.742278e-08, 0, -4.371139e-08, 2, -4.371139e-08, 0, 0.5, 0)
+
+[node name="Hotbar" type="ItemList" parent="CharacterBody3D" unique_id=443386176]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 266.0
+offset_top = -124.0
+offset_right = -266.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 0
+allow_search = false
+max_columns = 9
+same_column_width = true
+icon_mode = 0
+script = ExtResource("4_iywne")
+
+[node name="PauseMenu" type="VBoxContainer" parent="." unique_id=513172245]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -113.5
+offset_top = -79.0
+offset_right = 113.5
+offset_bottom = 79.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_u5sy4")
+
+[node name="Resume" type="Button" parent="PauseMenu" unique_id=1132907708]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Resume"
+
+[node name="Options" type="Button" parent="PauseMenu" unique_id=1263437436]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Options"
+
+[node name="Quit" type="Button" parent="PauseMenu" unique_id=821914340]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Quit"
+
+[node name="DebugText" type="Label" parent="." unique_id=669875258]
+offset_right = 131.0
+offset_bottom = 55.0
+theme_override_font_sizes/font_size = 30
+text = " FPS: %s"
+script = ExtResource("6_p57ef")
+
+[connection signal="pressed" from="PauseMenu/Resume" to="PauseMenu" method="_on_resume_pressed"]
+[connection signal="pressed" from="PauseMenu/Quit" to="PauseMenu" method="_on_quit_pressed"]

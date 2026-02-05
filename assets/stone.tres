@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://dglwque2snpsl"]
+
+[sub_resource type="Gradient" id="Gradient_6wvxe"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_yo0ji"]
+gradient = SubResource("Gradient_6wvxe")
+fill_from = Vector2(0.009505703, 1)
+
+[resource]
+albedo_texture = SubResource("GradientTexture2D_yo0ji")
+metallic = 0.2
+metallic_specular = 0.55
