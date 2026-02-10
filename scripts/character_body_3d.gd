@@ -39,6 +39,7 @@ extends CharacterBody3D
 ## Name of Input Action to toggle freefly mode.
 @export var input_freefly : String = "Freefly"
 @export var input_pause : String = "Pause"
+@export var input_perspective : String = "Toggle Perspective"
 
 var double_jump_available = false
 var mouse_captured : bool = false
@@ -48,12 +49,16 @@ var can_break = true
 var can_build = true
 var block_id = 0
 var timeout = .2
+enum perspectives {first, third}
+var perspective = perspectives.first
 
 ## IMPORTANT REFERENCES
 @onready var head: Node3D = $Head
+@onready var camera: Camera3D = $Head/Camera3D
 @onready var collider: CollisionShape3D = $Collider
 @onready var raycast: RayCast3D = $Head/RayCast3D
 @onready var hotbar: ItemList = $Hotbar
+const OUTLINE = preload("uid://v7sb6q003lj5")
 
 
 func _ready() -> void:
@@ -70,18 +75,30 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			capture_mouse()
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		buildBlock()
+		if mouse_captured:
+			buildBlock()
 	if Input.is_action_just_pressed(input_pause):
 		if !$"../PauseMenu".visible:
 			release_mouse()
 			$"../PauseMenu".visible = true
+			$"../Crosshair".visible = false
+			$Hotbar.visible = false
 		else:
 			capture_mouse()
 			$"../PauseMenu".visible = false
+			$"../Crosshair".visible = true
+			$Hotbar.visible = true
 	for n in range(1,10):
 		if Input.is_action_just_pressed("Hotbar Slot %s" % n):
 				hotbar.select(n-1)
-		
+	if Input.is_action_just_pressed(input_perspective):
+		if perspective == perspectives.first:
+			camera.position = Vector3(1,1.5,3)
+			perspective = perspectives.third
+		else:
+			camera.position = Vector3(0,.5,0)
+			perspective = perspectives.first
+
 	# Look around
 	if mouse_captured and event is InputEventMouseMotion:
 		rotate_look(event.relative)
@@ -191,6 +208,16 @@ func buildBlock():
 				can_build = false
 				await get_tree().create_timer(timeout).timeout
 				can_build = true
+
+func highlightBlock():
+	var override_material = ShaderMaterial.new()
+	override_material.shader = OUTLINE
+#	var highlight_collider = raycast.get_collider()
+#	if highlight_collider is GridMap:
+#		var collisionPoint = highlight_collider.local_to_map(raycast.get_collision_point())
+#		highlight_collider
+	
+	%MeshInstance3D.set_surface_override_material(0, override_material)
 
 ## Checks if some Input Actions haven't been created.
 ## Disables functionality accordingly.
