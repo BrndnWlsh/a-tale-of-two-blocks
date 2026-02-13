@@ -1,14 +1,16 @@
 [gd_scene format=3 uid="uid://oxlmvwp6q3fu"]
 
+[ext_resource type="Script" uid="uid://cn8p0v4xba8fv" path="res://scripts/game.gd" id="1_0tnpc"]
 [ext_resource type="MeshLibrary" uid="uid://drjxm425sub0f" path="res://assets/MeshLibrary.tres" id="1_lbhrr"]
-[ext_resource type="Script" uid="uid://b5m80lw1cbdjg" path="res://scripts/grid_map.gd" id="2_iywne"]
 [ext_resource type="Script" uid="uid://cmqkj08n4lnsp" path="res://scripts/character_body_3d.gd" id="3_p57ef"]
 [ext_resource type="Script" uid="uid://b1odmclkd0rx6" path="res://scripts/hotbar.gd" id="4_iywne"]
 [ext_resource type="Script" uid="uid://dhdqh8ylrs2ct" path="res://scripts/pause_menu.gd" id="4_u5sy4"]
-[ext_resource type="Script" uid="uid://b46hkaqk6qm4e" path="res://scenes/debug_text.gd" id="6_p57ef"]
+[ext_resource type="Script" uid="uid://b46hkaqk6qm4e" path="res://scripts/debug_text.gd" id="6_p57ef"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0wfyh"]
+sky_top_color = Color(0.20279999, 0.44330004, 0.78, 1)
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_bottom_color = Color(0.08, 0.047519997, 0.010399999, 1)
 ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
 
 [sub_resource type="Sky" id="Sky_sugp2"]
@@ -20,11 +22,64 @@ sky = SubResource("Sky_sugp2")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_jyhfs"]
+[sub_resource type="GDScript" id="GDScript_u5sy4"]
+script/source = "extends GridMap
+const WIREFRAME_2 = preload(\"uid://kdivrvr4eyav\")
+const WIREFRAME_2_MATERIAL = preload(\"uid://crpeadven7lqs\")
+const MESH_LIBRARY = preload(\"uid://drjxm425sub0f\")
+const DIRT = preload(\"uid://bhs4tx3l7g7aw\")
+const STONE = preload(\"uid://dglwque2snpsl\")
+enum shaders {NONE, WIREFRAME}
+var shader = shaders.NONE
+const materials = {0:DIRT, 1:STONE}
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tbgi4"]
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	generate_chunk(Vector3i(0,0,0))
+	generate_chunk(Vector3i(-1,0,0))
+	generate_chunk(Vector3i(0,0,-1))
+	generate_chunk(Vector3i(-1,0,-1))
+	cull_faces(Vector3i(0,0,0))
+	
+
+func generate_chunk(region_coords: Vector3i):
+	for x in range(16 * region_coords.x,16 * region_coords.x + 16):
+		for y in range (16 * region_coords.y - 16, 16 * region_coords.y):
+			for z in range(16 * region_coords.z, 16 * region_coords.z + 16):
+				#var block = mesh_library.get_item_mesh(0)
+				set_cell_item(Vector3i(x, y, z), 1)
+
+func cull_faces(region_coords: Vector3i):
+	for x in range(region_coords.x,region_coords.x + 16):
+		for y in range (region_coords.y-16, region_coords.y):
+			for z in range(region_coords.z, region_coords.z + 16):
+				get_cell_item(Vector3i(x, y, z))
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(_delta: float) -> void:
+	if Input.is_action_pressed(\"Shader Toggle\"):
+		if shader == shaders.NONE:
+			for ID in MESH_LIBRARY.get_item_list():
+				MESH_LIBRARY.get_item_mesh(ID).surface_set_material(0, WIREFRAME_2_MATERIAL)
+			shader = shaders.WIREFRAME
+			await get_tree().create_timer(1).timeout
+		else:
+			for ID in MESH_LIBRARY.get_item_list():
+				MESH_LIBRARY.get_item_mesh(ID).surface_set_material(0, materials[ID])
+			shader = shaders.NONE
+			await get_tree().create_timer(1).timeout
+			
+"
+
+[sub_resource type="BoxMesh" id="BoxMesh_p57ef"]
+size = Vector3(0.8, 2, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u5sy4"]
+size = Vector3(0.8, 2, 0.8)
 
 [node name="Game" type="Node3D" unique_id=721784016]
+script = ExtResource("1_0tnpc")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1781549032]
 environment = SubResource("Environment_jyhfs")
@@ -34,24 +89,25 @@ transform = Transform3D(-0.77648675, 0.5457118, -0.31506675, 2.9671545e-08, 0.49
 shadow_enabled = true
 
 [node name="GridMap" type="GridMap" parent="." unique_id=118213227]
+visible = false
 mesh_library = ExtResource("1_lbhrr")
 cell_size = Vector3(0.5, 0.5, 0.5)
 data = {
 "cells": PackedInt32Array(0, 1, 1048576, 1, 1, 1048576, 0, 2, 1048576, 1, 2, 1048576, 0, 3, 1048576, 1, 3, 1048576, 2, 2, 1048576, 2, 1, 1048576, 65535, 2, 1048576, 65535, 0, 1048576, 65535, 65535, 1048576, 0, 65535, 1048576, 0, 0, 1048576, 1, 0, 1048576, 0, 65534, 1048576, 0, 65533, 1048576, 0, 65532, 1048576, 1, 65535, 1048576, 1, 65534, 1048576, 65537, 65534, 1048576, 131073, 65534, 1048576, 196609, 65534, 1048576, 196610, 65534, 1048576, 196611, 65534, 1048576, 65535, 1, 1048576, 65534, 1, 1048576, 65534, 0, 1048576, 65534, 65535, 1048576, 65533, 65535, 1048576, 65533, 65534, 1048576, 65534, 65534, 1048576, 65535, 65534, 1048576, 65535, 65533, 1048576, 65535, 65532, 1048576, 65534, 65532, 1048576, 65534, 65533, 1048576, 65533, 65533, 1048576, 65533, 65532, 1048576, 65532, 65532, 1048576, 65531, 65532, 1048576, 65531, 65533, 1048576, 65532, 65533, 1048576, 65532, 65534, 1048576, 65532, 65535, 1048576, 65531, 65534, 1048576, 65531, 65535, 1048576, 65533, 0, 1048576, 65532, 0, 1048576, 65531, 0, 1048576, 65531, 1, 1048576, 65531, 2, 1048576, 65532, 2, 1048576, 65532, 3, 1048576, 65531, 3, 1048576, 65533, 3, 1048576, 65534, 3, 1048576, 65535, 3, 1048576, 65534, 2, 1048576, 65533, 1, 1048576, 65532, 1, 1048576, 65533, 2, 1048576, 2, 3, 1048576, 3, 3, 1048576, 4, 3, 1048576, 4, 2, 1048576, 4, 1, 1048576, 4, 0, 1048576, 4, 65535, 1048576, 4, 65534, 1048576, 4, 65533, 1048576, 4, 65532, 1048576, 3, 65532, 1048576, 2, 65532, 1048576, 1, 65532, 1048576, 1, 65531, 1048576, 0, 65531, 1048576, 65535, 65531, 1048576, 65535, 65530, 1048576, 65534, 65530, 1048576, 65533, 65530, 1048576, 65532, 65530, 1048576, 65531, 65530, 1048576, 65531, 65529, 1048576, 0, 65530, 1048576, 1, 65529, 1048576, 2, 65529, 1048576, 3, 65529, 1048576, 3, 65528, 1048576, 4, 65528, 1048576, 5, 65528, 1048576, 5, 65529, 1048576, 4, 65529, 1048576, 2, 65528, 1048576, 1, 65528, 1048576, 1, 65527, 1048576, 0, 65527, 1048576, 65535, 65527, 1048576, 65534, 65527, 1048576, 65533, 65527, 1048576, 65532, 65527, 1048576, 65532, 65528, 1048576, 65531, 65528, 1048576, 65531, 65527, 1048576, 65533, 65528, 1048576, 65534, 65528, 1048576, 65535, 65528, 1048576, 0, 65528, 1048576, 65535, 65529, 1048576, 65534, 65529, 1048576, 65533, 65529, 1048576, 65531, 65531, 1048576, 65532, 65531, 1048576, 65533, 65531, 1048576, 65534, 65531, 1048576, 65532, 65529, 1048576, 0, 65529, 1048576, 1, 65530, 1048576, 2, 65531, 1048576, 3, 65531, 1048576, 3, 65530, 1048576, 2, 65530, 1048576, 4, 65530, 1048576, 4, 65531, 1048576, 3, 65533, 1048576, 3, 65534, 1048576, 3, 65535, 1048576, 3, 0, 1048576, 3, 1, 1048576, 2, 0, 1048576, 2, 65535, 1048576, 2, 65534, 1, 3, 2, 1048576, 5, 2, 1048576, 5, 3, 1048576, 6, 3, 1048576, 6, 2, 1048576, 6, 1, 1048576, 6, 0, 1048576, 7, 0, 1048576, 7, 65535, 1048576, 7, 65534, 1048576, 7, 65533, 1048576, 8, 65533, 1048576, 8, 65532, 1048576, 8, 65531, 1048576, 7, 65531, 1048576, 7, 65530, 1048576, 7, 65529, 1048576, 6, 65529, 1048576, 6, 65530, 1048576, 5, 65530, 1048576, 5, 65531, 1048576, 5, 65532, 1048576, 5, 65533, 1048576, 6, 65534, 1048576, 6, 65535, 1048576, 5, 1, 1048576, 5, 0, 1048576, 5, 65535, 1048576, 5, 65534, 1048576, 6, 65533, 1048576, 6, 65532, 1048576, 7, 65532, 1048576, 6, 65531, 1048576, 65530, 1, 1048577, 65530, 0, 1048577, 65530, 65535, 1048577, 65530, 65534, 1048577, 65530, 65533, 1048577, 65529, 1, 1048576, 65529, 0, 1048576, 65529, 65535, 1048576, 65529, 65534, 1048576, 131069, 65531, 0, 131070, 65531, 0, 131071, 65531, 0, 65536, 65531, 0, 65537, 65531, 0, 196605, 65531, 0, 196606, 65531, 0, 196606, 65530, 0, 196607, 65530, 0, 131072, 65530, 0, 131073, 65530, 0, 131073, 65529, 0, 131074, 65529, 0, 131074, 65530, 0, 131073, 65531, 0, 131072, 65531, 0, 196607, 65531, 0, 196607, 65532, 0, 262141, 65531, 1, 262141, 65532, 1, 262142, 65531, 1, 262143, 65531, 1, 196608, 65531, 1, 65538, 65532, 1, 2, 65533, 1, 1, 65533, 1)
 }
-script = ExtResource("2_iywne")
+script = SubResource("GDScript_u5sy4")
 metadata/_editor_floor_ = Vector3(0, 0, 0)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1215262923]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5497619, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 script = ExtResource("3_p57ef")
 can_freefly = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D" unique_id=394263108]
-mesh = SubResource("CapsuleMesh_jyhfs")
+mesh = SubResource("BoxMesh_p57ef")
 
 [node name="Collider" type="CollisionShape3D" parent="CharacterBody3D" unique_id=1668942931]
-shape = SubResource("CapsuleShape3D_tbgi4")
+shape = SubResource("BoxShape3D_u5sy4")
 
 [node name="Head" type="Node3D" parent="CharacterBody3D" unique_id=1440641802]
 
@@ -59,7 +115,7 @@ shape = SubResource("CapsuleShape3D_tbgi4")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [node name="RayCast3D" type="RayCast3D" parent="CharacterBody3D/Head" unique_id=1138330183]
-transform = Transform3D(1.9106855e-15, -8.742278e-08, -1, -1, -8.742278e-08, 0, -4.371139e-08, 2, -4.371139e-08, 0, 0.5, 0)
+transform = Transform3D(1.9106855e-15, -1.3113416e-07, -1, -1, -1.3113416e-07, 0, -4.371139e-08, 3, -4.371139e-08, 0, 0.5, 0)
 
 [node name="Hotbar" type="ItemList" parent="CharacterBody3D" unique_id=443386176]
 anchors_preset = 12

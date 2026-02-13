@@ -59,6 +59,7 @@ var perspective = perspectives.first
 @onready var raycast: RayCast3D = $Head/RayCast3D
 @onready var hotbar: ItemList = $Hotbar
 const OUTLINE = preload("uid://v7sb6q003lj5")
+@onready var voxel_world: Node3D = $".."
 
 
 func _ready() -> void:
@@ -66,7 +67,7 @@ func _ready() -> void:
 	look_rotation.y = rotation.y
 	look_rotation.x = head.rotation.x
 	capture_mouse()
-	
+
 func _unhandled_input(event: InputEvent) -> void:
 	# Mouse capturing
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -183,31 +184,27 @@ func release_mouse():
 func breakBlock():
 	if raycast.is_colliding():
 		#print("raycast colliding")
-		var break_collider = raycast.get_collider()
-		if break_collider is GridMap and can_break:
-			var collisionPoint = raycast.get_collision_point()
-			var local_collision_point = break_collider.local_to_map(collisionPoint)
-			if break_collider.get_cell_item(break_collider.local_to_map(collisionPoint)) == -1:
-				local_collision_point = break_collider.local_to_map(collisionPoint + Vector3(-0.01 , -0.01, -0.01))
-			break_collider.set_cell_item(local_collision_point, -1)
+		var break_pos = raycast.get_collision_point()
+		var break_normal = raycast.get_collision_normal()
+		if can_break:
+			var block_global_position = (break_pos - break_normal / 2).floor()
+			voxel_world.set_block_global_position(block_global_position, 0)
 			can_break = false
 			await get_tree().create_timer(timeout).timeout
 			can_break = true
-			print("block broken at ", local_collision_point)
+			print("block broken at ", block_global_position)
 
 func buildBlock():
 	if raycast.is_colliding():
-		var build_collider = raycast.get_collider()
-		if build_collider is GridMap and can_build:
-			var collisionPoint = raycast.get_collision_point()
-			if build_collider.get_cell_item(build_collider.local_to_map(collisionPoint)) != -1:
-				build_collider.set_cell_item(build_collider.local_to_map(collisionPoint + raycast.get_collision_normal()), $Hotbar.get_selected_items()[0])	
-			else:
-				build_collider.set_cell_item(build_collider.local_to_map(collisionPoint), $Hotbar.get_selected_items()[0])
-			if can_build:
-				can_build = false
-				await get_tree().create_timer(timeout).timeout
-				can_build = true
+		var build_pos = raycast.get_collision_point()
+		var build_normal = raycast.get_collision_normal()
+		if can_build:
+			var block_global_position = (build_pos - build_normal / 2).floor()
+			voxel_world.set_block_global_position(block_global_position, 3)#$Hotbar.get_selected_items()[0])
+			can_build = false
+			await get_tree().create_timer(timeout).timeout
+			can_build = true
+			print("block broken at ", block_global_position)
 
 func highlightBlock():
 	var override_material = ShaderMaterial.new()
