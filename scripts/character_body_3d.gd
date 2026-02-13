@@ -204,7 +204,7 @@ func buildBlock():
 			can_build = false
 			await get_tree().create_timer(timeout).timeout
 			can_build = true
-			print("block broken at ", block_global_position)
+			print("block placed at ", block_global_position)
 
 func highlightBlock():
 	var override_material = ShaderMaterial.new()
